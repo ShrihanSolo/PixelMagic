@@ -79,7 +79,18 @@
 			<section>
 				<h2>Task 4</h2>
 				<ul>
-					<li></li>
+					<li>In this task, we seek to be able to generate triangles with an interpolated color scheme. 
+                        This interpolation can be performed by using the colors of the sampled vertices of the triangle 
+                        to infer the color of the points within it. This is accomplished using barycentric coordinates.</li>
+                    <li>Barycentric coordinates re-encode the coordinates of the triangle in terms of a weighted sum of their
+                        vertices. For example, take a triangle with vertices A, B, and C. The centroid of this triangle is the
+                        mean location between these three points, i.e., a weighted sum of the vertex vectors. Similarly, every point
+                        in the triangle (the convex hull of the three points) can be reached with a weighted sum of A, B, C.
+                    </li>
+                    <li>For example, P = aA + bB + cC, given a + b + c = 1, maps to any point in the triangle. The use of a, b, c to
+                        represent points on the triangle is known as using barycentric coordinates. 
+                    </li>
+                    <img src="interptriangle.png", style="width:750px;height: 750px;">
 				</ul>
 			</section>
 			<section>
