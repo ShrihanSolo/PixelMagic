@@ -61,13 +61,28 @@
 			<section>
 				<h2>Task 1</h2>
 				<ul>
-					<li></li>
+					<li> The purpose of rasterization is to write a function that draws a triangle
+					by deciding which point lies in the triangle and which doesn't. So we used the three
+					line test as described in lecture for a function point_in_triangle and we called 
+					this function in my rasterize_triangle function that draws our triangle. </li>
+					<li> At the very beginning of rasterize_triangle, I defined local variables
+					left, right, top and bottom to decide the minimum and maximum possible values
+					of x and y in our triangle. The rectangle with these points as vertices would be 
+					the same as the bounding box of this triangle. Since we are only looping over samples
+					with x and y in the range of (left,right) and (bottom, top) respectively, our algorithm
+					is no slower than one that checks every sample in the bounding box of the triangle.</li>
+					<li> </li>
 				</ul>
 			</section>
 			<section>
 				<h2>Task 2</h2>
 				<ul>
-					<li></li>
+					<li> We defined the sample rate and the frame buffer using set_sample_rate and set_framebuffer_target 
+					using the desired sample rate and frame size. We used rasterize_triangle to then sample points from our
+					triangle using antialiasing with the desired sampling rate, where the triangle is drawn using the three
+					vertices and three-line test like task 1, but with differing sample rate. We then used 
+					resolve_to_framebuffer that helped us to supersample buffer to rasterize the elements of image data. The sample rate
+					was used to divide our pixels into further sub-pixels that we use for sampling and that help avoid jaggies. </li>
 				</ul>
 			</section>
 			<section>
@@ -112,13 +127,29 @@
 			<section>
 				<h2>Task 5</h2>
 				<ul>
-					<li></li>
+					<li> We used texture antialiasing to supersample using our desired sample rate and use barycentric coordinates
+					to get a smooth texture in our triangles. The point of pixel sampling is to take nearby pixel(s) (either the nearest pixel
+					or the weighted mean of the adjacent pixels) and use their texture to compute the texture of every point which makes our
+					texture smoother across our surface. For sample_nearest we take the nearest pixel, which is just obtained by taking the floor
+					of our x and y coordinate. For bilinear we use the formulae for linear interpolation from lecture and use 4 adjacent points.</li>
 				</ul>
 			</section>
 			<section>
 				<h2>Task 6</h2>
 				<ul>
-					<li></li>
+					<li>The point of level sampling is to check the gradients in texture using rates of changes of our Barycentric coordinates
+					(u.v) across points (x,y) on our surface. We use the derivatives du/dx, du/dy, dv/dx and dv/dy and use their dorms to compute
+					levels of 'mipmaps' as described in lecture, which determine how sharp our image gets, depending on how smoothly our texture
+					changes across the image. We implemented by computing Barycentric coordinates (u,v) for each supersampled pixel (x,y) then also
+					adjacent points (x+1,y) and (x, y+1) and used their differences with our pixel to compute the desired derivatives, which were
+					then used to compute norms and subsequently mipmap levels in texture.get_level which is then used in texture.sample, so we use
+					the levels to compute the color at each pixel.</li>
+					<li> Bilinear filtering is slower than nearest filtering for both pixel and level sampling because for the former we needed more
+					computations- in pixel sampling, we take the average color of the four adjacent point instead of taking the color of just the
+					nearest point, while in level sampling it takes the weighted sum of the adjacent levels and at each level it performs pixel sampling.
+					In terms of memory usage, since bilinear filtering requires storage of more variables it is defintely more expensive. Each mipmap level
+					requires extensive memory. We can also see that as we increase the sampling rate, we sample more and more sub-pixels which thereby makes our
+					program expensive both in terms of memory and computation.</li>
 				</ul>
 			</section>
 		</main>
