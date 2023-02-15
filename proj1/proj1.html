@@ -71,18 +71,26 @@
 					the same as the bounding box of this triangle. Since we are only looping over samples
 					with x and y in the range of (left,right) and (bottom, top) respectively, our algorithm
 					is no slower than one that checks every sample in the bounding box of the triangle.</li>
-					<li> </li>
+					<img src="basictest4.png", style="width:750px;height: 630px;">
 				</ul>
 			</section>
 			<section>
 				<h2>Task 2</h2>
 				<ul>
-					<li> We defined the sample rate and the frame buffer using set_sample_rate and set_framebuffer_target 
-					using the desired sample rate and frame size. We used rasterize_triangle to then sample points from our
-					triangle using antialiasing with the desired sampling rate, where the triangle is drawn using the three
-					vertices and three-line test like task 1, but with differing sample rate. We then used 
-					resolve_to_framebuffer that helped us to supersample buffer to rasterize the elements of image data. The sample rate
-					was used to divide our pixels into further sub-pixels that we use for sampling and that help avoid jaggies. </li>
+					<li>
+						We defined the sample rate and the frame buffer using set_sample_rate and set_framebuffer_target
+						using the desired sample rate and frame size. We used rasterize_triangle to then sample points from our
+						triangle using antialiasing with the desired sampling rate, where the triangle is drawn using the three
+						vertices and three-line test like task 1, but with differing sample rate. We then used
+						resolve_to_framebuffer that helped us to supersample buffer to rasterize the elements of image data. The sample rate
+						was used to divide our pixels into further sub-pixels that we use for sampling and that help avoid jaggies.
+					</li>
+					<img src="basictest4-1.png" , style="width:750px;height: 630px;">
+					<img src="basictest4-4.png" , style="width:750px;height: 630px;">
+					<img src="basictest4-16.png" , style="width:750px;height: 630px;">
+					<li> As the sampling rate increases from 1 to 4 to 16, we can see in the pixel inspector that the image gets smoother
+					as the spaces between the sub-pixels get blurred out forming sort of a gradient. This is because with more sub-pixels 
+					sampled the image data gets more precise. </li>
 				</ul>
 			</section>
 			<section>
@@ -127,11 +135,21 @@
 			<section>
 				<h2>Task 5</h2>
 				<ul>
-					<li> We used texture antialiasing to supersample using our desired sample rate and use barycentric coordinates
-					to get a smooth texture in our triangles. The point of pixel sampling is to take nearby pixel(s) (either the nearest pixel
-					or the weighted mean of the adjacent pixels) and use their texture to compute the texture of every point which makes our
-					texture smoother across our surface. For sample_nearest we take the nearest pixel, which is just obtained by taking the floor
-					of our x and y coordinate. For bilinear we use the formulae for linear interpolation from lecture and use 4 adjacent points.</li>
+					<li>
+						We used texture antialiasing to supersample using our desired sample rate and use barycentric coordinates
+						to get a smooth texture in our triangles. The point of pixel sampling is to take nearby pixel(s) (either the nearest pixel
+						or the weighted mean of the adjacent pixels) and use their texture to compute the texture of every point which makes our
+						texture smoother across our surface. For sample_nearest we take the nearest pixel, which is just obtained by taking the floor
+						of our x and y coordinate. For bilinear we use the formulae for linear interpolation from lecture and use 4 adjacent points.
+					</li>
+					<img src="worlds1n.png" , style="width:750px;height: 630px;">
+					<img src="worlds16n.png" , style="width:750px;height: 630px;">
+					<img src="worlds1b.png" , style="width:750px;height: 630px;">
+					<img src="worlds16b.png" , style="width:750px;height: 630px;">
+					<li> As we can see with the bilinear pixel sampling as compared to nearest pixel sampling, the color and texture more smoothly
+					transform from one pixel to another. This makes the image clearer and more realistic and helps with color gradients. The latitude
+					and longitude lines also seem more dashed in the nearest pixel but this problem solved with bilinear sampling. The increase in 
+					sampling rate also dramatically makes the texture/color smoother and the features of land and water are clearer.</li>
 				</ul>
 			</section>
 			<section>
