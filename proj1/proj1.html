@@ -156,14 +156,14 @@
 				<h2>Task 6</h2>
 				<ul>
 					<li>The point of level sampling is to check the gradients in texture using rates of changes of our Barycentric coordinates
-					(u.v) across points (x,y) on our surface. We use the derivatives du/dx, du/dy, dv/dx and dv/dy and use their dorms to compute
+					(u.v) across points (x,y) on our surface. We use the derivatives du/dx, du/dy, dv/dx and dv/dy and use their norms to compute
 					levels of 'mipmaps' as described in lecture, which determine how sharp our image gets, depending on how smoothly our texture
 					changes across the image. We implemented by computing Barycentric coordinates (u,v) for each supersampled pixel (x,y) then also
 					adjacent points (x+1,y) and (x, y+1) and used their differences with our pixel to compute the desired derivatives, which were
 					then used to compute norms and subsequently mipmap levels in texture.get_level which is then used in texture.sample, so we use
 					the levels to compute the color at each pixel.</li>
 					<li> Bilinear filtering is slower than nearest filtering for both pixel and level sampling because for the former we needed more
-					computations- in pixel sampling, we take the average color of the four adjacent point instead of taking the color of just the
+					computations - in pixel sampling, we take the average color of the four adjacent point instead of taking the color of just the
 					nearest point, while in level sampling it takes the weighted sum of the adjacent levels and at each level it performs pixel sampling.
 					In terms of memory usage, since bilinear filtering requires storage of more variables it is defintely more expensive. Each mipmap level
 					requires extensive memory. We can also see that as we increase the sampling rate, we sample more and more sub-pixels which thereby makes our
@@ -172,6 +172,17 @@
                     <img src="berk0b.png", style="width:750px;height: 630px;">
                     <img src="berknn.png", style="width:750px;height: 630px;">
                     <img src="berknb.png", style="width:750px;height: 630px;">
+                    <li> Though it is not immediately clear from the images much difference in the types of interpolation and level sampling, 
+                        they are clearly present. We recommend the reader to go to the images themselves in the git repository to more accurately compare
+                        between the images.
+                    </li> Regarding the anti-aliasing power of the methods, using level sampling as well as bilinear filtering take care of the majority 
+                    of aliasing. That said, the filtering and sampling also cause the image to seem more blurry and smoothed overall, which produces an 
+                    image with lesser information. Further improvements such as anisotropic filtering can further reduce fuzzy blending and make a clearer
+                    image overall.
+                    <li>
+
+
+                    </li>
 				</ul>
 			</section>
 		</main>
