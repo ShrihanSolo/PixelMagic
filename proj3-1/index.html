@@ -314,7 +314,7 @@
 		</p>
 
 
-        <h2 align="middle">Part IV: Edge Flip</h2>
+        <h2 align="middle">Part IV: Global Illumination</h2>
 
         <strong>
             Walk through your implementation of the indirect lighting function.
@@ -322,24 +322,26 @@
         <p>
             The indirect lighting function adds to the direct illumination earlier. Not only considering one-bounce and zero-bounce illumination,
 			the indirect lighting function now calculates multiple bounces at once. We do this by recursion - at each bounce, the ray has a termination 
-			probability, which we set to 0.3, reweighting reflectance and emission along the way. The 
+			probability, which we set to 0.3, reweighting reflectance and emission along the way. Using each of these rays as samples, we get indirect
+			illumination in addition to direct illumination. Besides the Russian roulette termination, we also implement a max_depth in order to ensure computational
+			efficiency. It is not likely that the rays always reach max depth, but if they do, we know their contribution will likely be low anyway.
         </p>
         <br />
 
 
         <strong>
-            Show screenshots of the teapot before and after some edge flips.
+            Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
         </strong>
-        <div align="middle">
+        <<div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="teapot_with_phong.png" align="middle" width="400px" />
-                        <figcaption>Original Teapot</figcaption>
+                        <img src="spheres_1024.png" align="middle" width="400px" />
+                        <figcaption>Spheres With 1024 Samples/Pixel and Ambient Light</figcaption>
                     </td>
                     <td>
-                        <img src="teapotflips.png" align="middle" width="400px" />
-                        <figcaption>Teapot with many Edges Flipped</figcaption>
+                        <img src="bunny_part5.png" align="middle" width="400px" />
+                        <figcaption>Bunny With 2048 Samples/Pixel and Ambient Light. </figcaption>
                     </td>
                 </tr>
             </table>
@@ -348,13 +350,131 @@
 
 
         <strong>
-            Write about your eventful debugging journey, if you have experienced one.
+            Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. (You will have to edit PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)
         </strong>
         <p>
             We initially made a tiny mistake as to which half-edge and which edge changes to which, but with careful labelling it was
             solved very quickly and we didn't have to do any debugging as the flipping process is relatively straightforward.
         </p>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="global_sphere_1024_indirect.png" align="middle" width="400px" />
+                        <figcaption>With Only Indirect Lighting (Ambient Lighting, Two Bounces+)</figcaption>
+                    </td>
+                    <td>
+                        <img src="global_sphere_1024_direct.png" align="middle" width="400px" />
+                        <figcaption>With Only Direct Lighting (Zero-Bounce and One-Bounce). </figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
         <br />
+
+		<strong>
+			For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100 (the -m flag). Use 1024 samples per pixel.
+		</strong>
+		<p>
+			We render the images below. We find that beyond m = 2, the difference is very subtle, and not immediately clear. However, the difference
+			between m = 2 and m = 100 is barely discernable in the edges of the walls. We see in the m = 1 case that the ceiling is not visible, and 
+			in the m = 0 case that only the direct lighting can be seen. The shadows also become significantly smoother with higher values of m.
+		</p>
+		<br />
+
+		<div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="rabbit_m0.png" align="middle" width="400px" />
+                        <figcaption>For m = 0.</figcaption>
+                    </td>
+                    <td>
+                        <img src="rabbit_m1.png" align="middle" width="400px" />
+                        <figcaption>For m = 1.</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="rabbit_m2.png" align="middle" width="400px" />
+                        <figcaption>For m = 2.</figcaption>
+                    </td>
+                    <td>
+                        <img src="rabbit_m3.png" align="middle" width="400px" />
+                        <figcaption>For m = 3.</figcaption>
+                    </td>
+                </tr>
+				<br />
+                <tr align="center">
+                    <td>
+                        <img src="rabbit_m100.png" align="middle" width="400px" />
+                        <figcaption>For m = 100.</figcaption>
+                    </td>
+                    <td>
+                        <img src="rabbit_m100.png" align="middle" width="400px" />
+                        <figcaption>For m = 100.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<strong>
+			Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
+		</strong>
+		<p>
+			We render the images below. The values of samples per pixel change the image noise dramatically, and with increasing numbers of samples-per-pixel, the image
+			converges to a much more reasonable estimate of the true illumination.
+		</p>
+		<br />
+
+		<div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="sphere_s1.png" align="middle" width="400px" />
+                        <figcaption>For s = 1.</figcaption>
+                    </td>
+                    <td>
+                        <img src="sphere_s2.png" align="middle" width="400px" />
+                        <figcaption>For s = 2.</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="sphere_s4.png" align="middle" width="400px" />
+                        <figcaption>For s = 4.</figcaption>
+                    </td>
+                    <td>
+                        <img src="sphere_s8.png" align="middle" width="400px" />
+                        <figcaption>For s = 8.</figcaption>
+                    </td>
+                </tr>
+				<br />
+                <tr align="center">
+                    <td>
+                        <img src="sphere_s16.png" align="middle" width="400px" />
+                        <figcaption>For s = 16.</figcaption>
+                    </td>
+                    <td>
+                        <img src="sphere_s64.png" align="middle" width="400px" />
+                        <figcaption>For s = 64.</figcaption>
+                    </td>
+                </tr>
+				<tr align="center">
+                    <td>
+                        <img src="sphere_s1024.png" align="middle" width="400px" />
+                        <figcaption>For s = 100.</figcaption>
+                    </td>
+                    <td>
+                        <img src="sphere_s1024.png" align="middle" width="400px" />
+                        <figcaption>For s = 1024.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
 
 
         <h3 align="middle">Part 5: Edge Split</h3>
