@@ -1,7 +1,531 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-1 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    background-color: white;
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  kbd {
+    color: #121212;
+  }
+  strong { font-weight: bold; }
+</style>
+<title>CS 184: Pathtracer</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 3-1: Pathtracer</h1>
+<h2 align="middle">SUHRID SAHA, SHRIHAN AGARWAL</h2>
+
+<br><br>
+
+    <div>
+
+        <h2 align="middle">Overview</h2>
+        <p>
+            Link to Github: <a> https://github.com/cal-cs184-student/p3-1-pathtracer-sp23-pixelmagik </a>
+            We recreate a pathtracer. Pathtracers are used to realistically simulate the effect of light in a virtual scene.
+			In brief, we perform pathtracing by tracing the path of light in reverse from a virtual camera onto the scene, calculating reflection and absorption,
+			and determining the illumination of the ray that hits a light source. Averaging the illumination from multiple of these rays, we get a strong
+			understanding of the color and illumination for each camera pixel.
+		</p>
+		<p>
+			Specifically for our project, we begin with Part 1, which deals with ray generation and intersection. Since most mesh objects are composed of triangles
+			or spheres, we simply implement the logic for triangle and sphere intersections. Additionally, we set up conversions between the world space and image space.
+			For ray-triangle intersection, we implement the Muller-Trumbore algorithm. For ray-sphere intersection, we solve the quadratic ray-sphere intersection formula.
+		</p>
+		<p>
+			In Part 2, we implement the Bounding Volume Hierarchy and use ofn bounding boxes. These are a splitting of the world space into a tree of bounding boxes 
+			such that all objects do not need to be checked for intersection against a all the rays of light, dropping the scaling to O(logN) in the number of mesh objects.
+			For renders with high triangle counts, this is essential. We split using the mean centroid of the sub-nodes of a BVH node, and choose the axis with the largest extent
+			to split on, allowing efficient splitting and a balanced tree. 
+		</p>
+		<p>
+			In Part 3, we implement direct illumination, i.e. zero-bounce illuination from a light source, and one-bounce illumination. We do this by tracing rays 
+			throughout the environment while sampling from a uniform hemisphere grid at first, and later implementing importance sampling to sample directly 
+			from light sources. By sampling from light sources and weighting by importance correctly, we can reconstruct the same image at a fraction of the original 
+			cost.
+		</p>
+		<p>
+			In Part 4, we complete the indirect lighting of the space, and global illumination. This means that over one bounce of lighting is used, and a Russian roulette
+			system is adopted to determine whether an array terminates or not. Combining these with the direct illumination from earlier, we can calculate the total global 
+			illumination and generate realistically lighted scenes.
+		</p>
+		<p>
+			In Part 5, we implement adaptive sampling. Adaptive sampling samples pixels by determining whether they require more samples, or otherwise have 
+			effectively converged, using a convergence metric. With this, sampling becomes significantly more efficient, as quickly converging pixels do not require
+			as many samples. In all, we have created a pathtracer that can efficiently simulate illumination in 3D graphics.
+        </p>
+        <br />
+
+
+        <h2 align="middle">Part I: Ray Generation and Scene Intersection</h2>
+
+
+        <strong>
+            Walk through the ray generation and primitive intersection parts of the rendering pipeline.
+        </strong>
+        <p>
+            ANS
+        </p>
+        <br />
+
+
+        <strong>
+            Explain the triangle intersection algorithm you implemented in your own words.
+        </strong>
+        <p>
+            ANS
+        </p>
+		<br/>
+
+		<strong>
+			Show images with normal shading for a few small .dae files.
+		</strong>
+
+		<p>
+			ANS
+        </p>
+
+        <!-- Example of including a single figure -->
+        <div align="middle">
+            <img src="mybeziercurve.png" align="middle" width="50%" />
+        </div>
+        <br />
+
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="mybeziercurve.png" align="middle" width="400px" />
+                        <figcaption>Level 0</figcaption>
+                    </td>
+                    <td>
+                        <img src="mybeziercurve1.png" align="middle" width="400px" />
+                        <figcaption>Level 1</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="mybeziercurve2.png" align="middle" width="400px" />
+                        <figcaption>Level 2</figcaption>
+                    </td>
+                    <td>
+                        <img src="mybeziercurve3.png" align="middle" width="400px" />
+                        <figcaption>Level 3</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="mybeziercurve4.png" align="middle" width="400px" />
+                        <figcaption>Level 4</figcaption>
+                    </td>
+                    <td>
+                        <img src="mybeziercurvefinal.png" align="middle" width="400px" />
+                        <figcaption>Final Curve</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="bezexp1.png" align="middle" width="400px" />
+                        <figcaption>t1</figcaption>
+                    </td>
+                    <td>
+                        <img src="bezexp2.png" align="middle" width="400px" />
+                        <figcaption>t2</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="bezexp3.png" align="middle" width="400px" />
+                        <figcaption>t3</figcaption>
+                    </td>
+                    <td>
+                        <img src="bezexp4.png" align="middle" width="400px" />
+                        <figcaption>t4</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
+        <h2 align="middle">Part II: Bounding Volume Hierarchy</h2>
+        <strong>
+            Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
+        </strong>
+        <p>
+            ANS
+        </p>
+        <br />
+
+        <strong>
+            Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.
+        </strong>
+        <div align="middle">
+            <img src="teapotbez.png" align="middle" width="50%" />
+        </div>
+        <br />
+
+		<strong>
+            Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration. Present your results in a one-paragraph analysis.
+        </strong>
+        <p>
+            ANS
+        </p>
+        <br />
+
+
+        <h2 align="middle">Part III: Direct Illumination</h2>
+
+        <strong>
+            Walk through both implementations of the direct lighting function.
+		</strong>
+        <p>
+            There are two implementations of direct lighting, that differ in the type of sampling.
+        </p>
+		<p>
+			The first is uniform hemisphere sampled direct illumination. In uniform hemisphere sampling, at each reflection point of the ray, lighting contributions
+			are sampled from all directions on the hemisphere with axis normal to the surface directly. That is, the lighting at a reflection point is equally sampled
+			from all directions, regardless of the positions of actual light sources. To calculate the one-bounce illumination, we first generate a ray from the camera
+			until it intersects an object in a direction "w_out". We calculate the outgoing light in a randomly sampled direction using reflectance/emissivity of the object
+			according to its BSDF, and continue to trace the ray in the direction "w_in". If w_in happens to make contact with an emitting object, the illuminance of the camera
+			pixel's sample is weighted by its emission: effectively a combination of the emissivity and the reflectance. If the ray does not hit an emitting object,
+			the pixel illuminance samples 0. Therefore, averaging many of these rays, we get an accurate estimate of the illuminance.
+		</p>
+		<p>
+			However, this is inefficient as the majority of rays are likely to end up away from a light source. Therefore, we instead use importance sampling. 
+			Importance sampling samples "w_in" directly from the light source direction, since we know the location of the light sources. If there is a point source, we
+			only sample it once for each reflection point. For an extended source, the light is sampled in directions of the light source and averaged. This would give 
+			us a biased estimate of the illuminance, since we are only considering light sources. We therefore accordingly weight the samples by the inverse of their 
+			probability of being chosen. This is output by the sample_L function. With the correct weighting, we get an efficient method of sampling and deriving the 
+			direct illumination.
+		</p>
+        <br />
+
+        <strong>
+            Show some images rendered with both implementations of the direct lighting function.
+        </strong>
+		<br/>
+		<p>
+			Both images below are rendered with the samples per pixel = 64, light rays = 32, depth = 6.
+		</p>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="CBbunny_H_64_32.png" align="middle" width="400px" />
+                        <figcaption>Uniform Hemisphere Sampling</figcaption>
+                    </td>
+                    <td>
+                        <img src="bunny_64_32.png" align="middle" width="400px" />
+                        <figcaption>Light Sampling</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+		<strong>
+            Focus on one particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag) using light sampling, not uniform hemisphere sampling.
+        </strong>
+		<p>
+			We see here in the shadows that the sampling becomes increasingly smoothed out with an increased number of light rays. 
+			This ensures that there is sufficient sampling of the lights and directions in order for the shadow to be correctly calculated.
+		</p>
+		<br />
+
+		<div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="light_sphere_1.png" align="middle" width="400px" />
+                        <figcaption>Light Rays = 1</figcaption>
+                    </td>
+                    <td>
+                        <img src="light_sphere_4.png" align="middle" width="400px" />
+                        <figcaption>Light Rays = 4</figcaption>
+                    </td>
+                </tr>
+                <br />
+                <tr align="center">
+                    <td>
+                        <img src="light_sphere_16.png" align="middle" width="400px" />
+                        <figcaption>Light Rays = 16</figcaption>
+                    </td>
+                    <td>
+                        <img src="light_sphere_64.png" align="middle" width="400px" />
+                        <figcaption>Light Rays = 64</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+		<br />
+
+
+		<strong>
+			Compare the results between uniform hemisphere sampling and lighting sampling in a one-paragraph analysis.
+		</strong>
+
+		<p>
+			Seeing the bunny in the previous figure, generated using both methods, we notice a few significant differences. The first is that the 
+			uniform sampling is significantly more noisy, since the majority of light rays end up not contributing the the illumination calculation,
+			and wasting samples. Secondly, the light sampling appears to be unbiased on comparison, indicating that the light sampling was indeed 
+			correct, and normalized by the correct probability of a particular light sample being drawn.
+		</p>
+
+
+        <h2 align="middle">Part IV: Edge Flip</h2>
+
+        <strong>
+            Walk through your implementation of the indirect lighting function.
+        </strong>
+        <p>
+            The indirect lighting function adds to the direct illumination earlier. Not only considering one-bounce and zero-bounce illumination,
+			the indirect lighting function now calculates multiple bounces at once. We do this by recursion - at each bounce, the ray has a termination 
+			probability, which we set to 0.3, reweighting reflectance and emission along the way. The 
+        </p>
+        <br />
+
+
+        <strong>
+            Show screenshots of the teapot before and after some edge flips.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="teapot_with_phong.png" align="middle" width="400px" />
+                        <figcaption>Original Teapot</figcaption>
+                    </td>
+                    <td>
+                        <img src="teapotflips.png" align="middle" width="400px" />
+                        <figcaption>Teapot with many Edges Flipped</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
+        <strong>
+            Write about your eventful debugging journey, if you have experienced one.
+        </strong>
+        <p>
+            We initially made a tiny mistake as to which half-edge and which edge changes to which, but with careful labelling it was
+            solved very quickly and we didn't have to do any debugging as the flipping process is relatively straightforward.
+        </p>
+        <br />
+
+
+        <h3 align="middle">Part 5: Edge Split</h3>
+        <strong>
+            Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.
+        </strong>
+        <p>
+            For the edge split operation, our process was very similar to the edge flip, where we used the "Guide to Implementing Edge
+            Operations on a Half-Edge Data Structure" provided in the spec. We first constructed two diagrams- one with
+            two triangles sharing an edge and one with the same shapes but where the edge has been split into two. We then labelled
+            every half-edge, edge, vertex and face in either diagram. This time the number of mesh elements we had to keep track of were way more
+            such as instead of 10 half edges we had 16 half edges in the second diagram, especially since instead of one edge we had four edges and we
+            had an entirely new vertex. We then noticed the changes and we implemented splitEdge as follows: we "collect" our mesh elements required
+            and then "reassign" the mesh elements.
+        </p>
+        <br />
+
+
+        <strong>
+            Show screenshots of a mesh before and after some edge splits.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="teapot_with_phong.png" align="middle" width="400px" />
+                        <figcaption>Original Teapot</figcaption>
+                    </td>
+                    <td>
+                        <img src="teapotsplits.png" align="middle" width="400px" />
+                        <figcaption>Teapot with many Edges Split</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
+        <strong>
+            Show screenshots of a mesh before and after a combination of both edge splits and edge flips.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="teapot_with_phong.png" align="middle" width="400px" />
+                        <figcaption>Original Teapot</figcaption>
+                    </td>
+                    <td>
+                        <img src="teapotflipsnsplits.png" align="middle" width="400px" />
+                        <figcaption>Teapot with combination of Edge Flips and Splits</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
+        <strong>
+            Write about your eventful debugging journey, if you have experienced one.
+        </strong>
+        <p>
+            Our process was pretty much the same, and since we were extremely careful with labelling the mesh elements
+            we did not make any mistakes there. The only difference was instead of returning the flipped edge like last time
+            we return the new vertex as a result of the split edge and so we did return the new vertex (v4) but forgot to
+            write what its position should be (the mean of 4 vertex positions) and so it was defaulting to the origin, hence
+            making our faces point inward after any edge split. Once we realized the silly error, we fixed it and everything worked.
+        </p>
+        <br />
+
+
+        <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
+        <strong>
+            Briefly explain how you implemented the loop subdivision and describe any interesting implementation / debugging tricks you have used.
+        </strong>
+        <p>
+            We implemented loop subdivision under our mesh upsampler function. We started by computing new positions for all the vertices in the input mesh,
+            using the Loop subdivision rule and storing them in Vertex::newPosition. For this we iterated over every vertex in the
+            mesh, computed neighbor position sums using the centroid function and used the given formula for newPosition. At this point, we also want to mark
+            each vertex as being a vertex of the original mesh so for each vertex we marked isNew as false. Then we computed the updated vertex positions
+            associated with edges, and store it in Edge::newPosition. For this we just iterated over every edge and found the ends of the
+            edge and the ends of the splitting edge and used these vertex positions to compute newPosition. During this loop we had maintained a counter
+            that counted the number of edges before any splits. We then split every edge in the mesh, in any order. For this iterated over the edges but stopped looping once our previous counter for number of edges ended so that
+            we wouldn't iterate over any new edges as a result of splits. For this step, we marked every edge of every triangle as new or old as we went along our splits. Then,
+            we iterated over every edge, but for any edge that was new and exactly one of its end vertices was new (so the other was old), we would flip such an edge.
+            Finally we iterated over all vertices and for old vertices (isNew = false) we changed position to newPosition since this would now be the position of the vertex
+            after the subdivisions are done.
+        </p>
+        <br />
+
+
+        <strong>
+            Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?
+        </strong>
+        <p>
+            As seen below in the file for the cow, as the loop subdivisions increase, the triangle mesh gets subdivided into smaller triangles
+            causing the resolution to increase and the surface to look more defined. Although initially it seems like the subdivisions are increasing
+            the number of sharp corners and edges, with more and more subdivisions, since the the number of sharp corners have been multiplied many-fold,
+            the surface is starting to look smoother.
+        </p>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="cow.png" align="middle" width="400px" />
+                        <figcaption>Original Cow</figcaption>
+                    </td>
+                    <td>
+                        <img src="cow2.png" align="middle" width="400px" />
+                        <figcaption>Some Loop Subdivisions</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="cow3.png" align="middle" width="400px" />
+                        <figcaption>More Loop Subdivisions</figcaption>
+                    </td>
+                    <td>
+                        <img src="cow4.png" align="middle" width="400px" />
+                        <figcaption>Even More Loop Subdivisions</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
+        <strong>
+            Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. Notice that the cube becomes slightly asymmetric after repeated subdivisions. Can you pre-process the cube with edge flips and splits so that the cube subdivides symmetrically? Document these effects and explain why they occur. Also explain how your pre-processing helps alleviate the effects.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="cube1.png" align="middle" width="400px" />
+                    </td>
+                    <td>
+                        <img src="cube2.png" align="middle" width="400px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="cube3.png" align="middle" width="400px" />
+                    </td>
+                    <td>
+                        <img src="cube4.png" align="middle" width="400px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="cube5.png" align="middle" width="400px" />
+                    </td>
+                    <td>
+                        <img src="cube6.png" align="middle" width="400px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+    </div></body>
 </html>
