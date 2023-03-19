@@ -93,7 +93,29 @@
             Walk through the ray generation and primitive intersection parts of the rendering pipeline.
         </strong>
         <p>
-            ANS
+            <b>RAY GENERATION </b>
+            The purpose of ray-generation is to generate a ray from the camera’s perspective but in the world coordinate system.
+
+            So we find the equation for the vector pointing from the camera to our pixel (which has coordinates x,y in the image space) but in the camera’s coordinate system.
+            Since the bottom left corner was at (-tan(0.5*hFov), -tan(0.5*vFov), -1) and the top right corner was (tan(0.5*hFov), tan(0.5*vFov), -1) we calculated that this vector
+            (still in the camera’s coordinate system) would be ((2x-1)*tan(0.5*hFov)/2, (2x-1)*tan(0.5 x vFov)/2, -1).
+
+            We then convert this vector from the camera’s coordinate system to the world’s coordinate system by multiplying by the “c2w” matrix provided- which transforms from the
+            camera to the world coordinates. We then call this transformed vector as the camera ray direction and normalize it. Given this normalized camera ray direction
+            (in the world coordinate system) and the position of the camera in ‘world’, we get a ray pointing from the camera to our pixel in the world and set its min_t and
+            max_t to nClip and fClip respectively.
+
+            We then use this ray to update the illumination of our pixel in the image and to check for intersections with shapes and objects and render our image accordingly.
+            For the former, we just use this camera generated ray, generate multiple random samples in the pixel and use “estimate_global_illumination” with this ray and average
+            over the samples to find the illumination of the pixel.
+            <br />
+
+            <b>PRIMITIVE INTERSECTION</b>
+            We check for intersection of our camera generated rays with primitives to check for which points on our surface does the light bounce off of. We check for intersection of our rays with two kinds of primitives- triangles and spheres, since they have different intersection equations.
+            For the triangles, we have coordinates for its three vertices and its three normals. To find where any given ray intersects the said triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
+            For the spheres, we have coordinates for its center and the value for its radius. We use the equations in the ray-sphere intersection slides from the ray tracing lecture to get a quadratic equation, solving which gives us either two, one or zero points of intersection between the ray and sphere. The ‘t’ values at these intersections are then checked for being within the range (min_t, max_t), because if they are not, we return false. We choose the point closer to the camera in case of two points. We also find the normal at the nearest point of intersection by taking the difference between the coordinates of the point of intersection and the coordinates of the origin.
+            In either primitive intersection, we store the information like the value of t, the normal vector at intersection, the bsdf and the primitive itself in an intersection object which we have a pointer to. This is used later when we compute illumination with bounces.
+
         </p>
         <br />
 
@@ -102,7 +124,10 @@
             Explain the triangle intersection algorithm you implemented in your own words.
         </strong>
         <p>
-            ANS
+            To find where any given ray intersects the triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices of the triangle and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection.
+            The algorithm is based on the following math: We know that for barycentric coordinates (1-b1-b2), b1 and b2 and vertices v1, v2 and v3 out point of intersection is P = (1-b1-b2)*v1 + b1*v2 + b2*v3. We also know that for some t, we must have P = o + t*d where the ray has origin o and direction vector d. Then we have o + t*d = (1-b1-b2)*v1 + b1*v2 + b2*v3 which gives us a system of three linear equations to solve for t, b1 and b2. If we use Cramer’s rule to solve for this 3d vector and simplify the determinant in the denominator as a combination of a cross product and dot product, we get three equations for t, b1 and b2, hence giving us our solution. This final equation for the solution only takes 1 division, 27 multiplications and 17 additions to compute, much faster than any other method we can use and is mentioned in the lecture slides- entirely in terms of v1, v2, v3, o and d. We use exactly this in our code.
+            We then also use (1-b1-b2), b1 and b2 and the three normals of our triangle n1, n2, n3 to find the normal vector n (= (1-b1-b2)*n1 + b1*n2 + b2*n3) of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
+
         </p>
 		<br/>
 
@@ -193,7 +218,10 @@
             Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
         </strong>
         <p>
-            ANS
+            We construct our Bounding Volume Hierarchy, or simply BVH, as follows: We have an iterator for all the primitives in our BVH, so we first iterate over all the bounding boxes of these primitives to get 1) a bounding box that covers all the bounding boxes in our shape; 2) a bounding box that covers the centroids of these bounding boxes, calling this our ‘centroid box’; 3) a count of all the bounding boxes in our BVH.
+            If this bounding box count is zero we return NULL for our BVH. If this bounding box count is less than or equal to the chosen maximum leaf size then we return a leaf node as our BVH- with just a start and an end and no left and right child nodes.
+            Otherwise, we need to split this BVH into a left BVH node and a right BVH node. The heuristic for the split we use is the average of all centroids as our midpoint along the longest axis. We use our ‘centroid box’ and take its maximum extent- the x, y and z extents give us the differences between the minimum and maximum x, y and z coordinates respectively. This maximum extent would give us the axis along which splitting is most likely to give equally big left and right child nodes, since this axis would be the longest, which makes our BVH binary tree more balanced. We also iterate over every primitive and its corresponding bounding box in our entire parent BVH node and take the average of all these centroids. Given our best axis (x, y or z) we again iterate over every primitive and its corresponding bounding box in our entire parent BVH node and split each bounding box into either the left child node or the right child node. Each box is split into either depending on whether its centroid lies to the left or the right of the average of all the centroids we previously calculated. Once we have the split ready, that is, we have iterators for primitives in our left node and our right node respectively, we recursively call our construct function for each child node so they continue to be split into further child nodes until we reach leaves, hence forming our BVH binary tree.
+
         </p>
         <br />
 
