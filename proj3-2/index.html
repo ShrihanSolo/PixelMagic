@@ -53,19 +53,19 @@
             Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
         </p>
         <p>
-            In this project, we add in some final changes to the staff code for Project 3-1 to complete our pathtracer, namely Part 2: Microfacet Material, and Part 
+            In this project, we add in some final changes to the staff code for Project 3-1 to complete our pathtracer, namely Part 2: Microfacet Material, and Part
             4: Depth of Field.
         </p>
         <p>
             In Part 2, we implement microfacet models for various different textures: copper, gold, and aluminium/silver, for the bunny, dragon, and spheres. We replace
             the typical reflectance formulae with the revised MicrofacetBSDF::f() formula, which takes into account the roughness of the material and air-conductor reflectance.
-            We utilize the air-conductor Fresnel term F(), the Normal Distribution function D(), and combine them with the input and output ray directions to obtain a 
-            more accurate surface reflectance. Lastly, we implement importance sampling correctly for the microfacet BSDF according to the Beckmann Normal Distribution 
+            We utilize the air-conductor Fresnel term F(), the Normal Distribution function D(), and combine them with the input and output ray directions to obtain a
+            more accurate surface reflectance. Lastly, we implement importance sampling correctly for the microfacet BSDF according to the Beckmann Normal Distribution
             Function.
         </p>
         <p>
             In Part 4, we implement the thin-lens approximation in order to add a depth-of-field effect to our renders. Our eyes, glasses, and contacts all have lenses,
-            which means that only one particular depth is entirely in focus at once, unlike the pinhole-camera like rendered images we have been generating upto this 
+            which means that only one particular depth is entirely in focus at once, unlike the pinhole-camera like rendered images we have been generating upto this
             point. We accomplish this depth of field effect by placing a thin refractive lens in front of the camera, with variable lens radius, focal distance, and position.
         </p>
         <p>
@@ -75,77 +75,110 @@
         <br />
 
 
-        <h2 align="middle">Part II: Ray Generation and Scene Intersection</h2>
+        <h2 align="middle">Part II: Microfacet Material</h2>
 
-
-        <strong>
-            Walk through the ray generation and primitive intersection parts of the rendering pipeline.
-        </strong>
         <p>
-            <strong>RAY GENERATION: </strong>
-            The purpose of ray-generation is to generate a ray from the camera’s perspective but in the world coordinate system.
-
-            So we find the equation for the vector pointing from the camera to our pixel (which has coordinates x,y in the image space) but in the camera’s coordinate system.
-            Since the bottom left corner was at (-tan(0.5*hFov), -tan(0.5*vFov), -1) and the top right corner was (tan(0.5*hFov), tan(0.5*vFov), -1) we calculated that this vector
-            (still in the camera’s coordinate system) would be ((2x-1)*tan(0.5*hFov)/2, (2x-1)*tan(0.5 x vFov)/2, -1).
-
-            We then convert this vector from the camera’s coordinate system to the world’s coordinate system by multiplying by the “c2w” matrix provided- which transforms from the
-            camera to the world coordinates. We then call this transformed vector as the camera ray direction and normalize it. Given this normalized camera ray direction
-            (in the world coordinate system) and the position of the camera in ‘world’, we get a ray pointing from the camera to our pixel in the world and set its min_t and
-            max_t to nClip and fClip respectively.
-
-            We then use this ray to update the illumination of our pixel in the image and to check for intersections with shapes and objects and render our image accordingly.
-            For the former, we just use this camera generated ray, generate multiple random samples in the pixel and use “estimate_global_illumination” with this ray and average
-            over the samples to find the illumination of the pixel.
-            <br />
-
-            <strong>PRIMITIVE INTERSECTION:</strong>
-            We check for intersection of our camera generated rays with primitives to check for which points on our surface does the light bounce off of. We check for intersection of our rays with two kinds of primitives- triangles and spheres, since they have different intersection equations.
-            For the triangles, we have coordinates for its three vertices and its three normals. To find where any given ray intersects the said triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
-            For the spheres, we have coordinates for its center and the value for its radius. We use the equations in the ray-sphere intersection slides from the ray tracing lecture to get a quadratic equation, solving which gives us either two, one or zero points of intersection between the ray and sphere. The ‘t’ values at these intersections are then checked for being within the range (min_t, max_t), because if they are not, we return false. We choose the point closer to the camera in case of two points. We also find the normal at the nearest point of intersection by taking the difference between the coordinates of the point of intersection and the coordinates of the origin.
-            In either primitive intersection, we store the information like the value of t, the normal vector at intersection, the bsdf and the primitive itself in an intersection object which we have a pointer to. This is used later when we compute illumination with bounces.
-
+            We implemented the BRDF evaluation function f, Normal Distribution function D and Fresnel Term F exactly
+            according to the formulae mentioned in the spec, in terms of wi, wo and the half vector h (= wi + wo and
+            then normalized). Note that for D, cos_theta = h.z and for F, cos_theta = wi.z. Then we implemented the
+            BRDF sampling function sample_f. It just returns f(wo, wi) if wi is valid. We also change pdf (which is
+            the probability density for wi w.r.t solid angle here) to pdf for h w.r.t solid angle divided by 4 times
+            the dot product of h and wi. Here h and its pdf was computed exactly according to the formulae given to us,
+            that is, using the pdfs and the samples of theta and phi which define the coordinate system for h.
         </p>
-        <br />
 
 
         <strong>
-            Explain the triangle intersection algorithm you implemented in your own words.
+            Show a screenshot sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with
+            α set to 0.005, 0.05, 0.25 and 0.5. The other settings should be at least 128 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Describe the differences between different images. Note that, to change the
+            α, just open the .dae file and search for microfacet.
         </strong>
-        <p>
-            To find where any given ray intersects the triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices of the triangle and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection.
-            The algorithm is based on the following math: We know that for barycentric coordinates (1-b1-b2), b1 and b2 and vertices v1, v2 and v3 out point of intersection is P = (1-b1-b2)*v1 + b1*v2 + b2*v3. We also know that for some t, we must have P = o + t*d where the ray has origin o and direction vector d. Then we have o + t*d = (1-b1-b2)*v1 + b1*v2 + b2*v3 which gives us a system of three linear equations to solve for t, b1 and b2. If we use Cramer’s rule to solve for this 3d vector and simplify the determinant in the denominator as a combination of a cross product and dot product, we get three equations for t, b1 and b2, hence giving us our solution. This final equation for the solution only takes 1 division, 27 multiplications and 17 additions to compute, much faster than any other method we can use and is mentioned in the lecture slides- entirely in terms of v1, v2, v3, o and d. We use exactly this in our code.
-            We then also use (1-b1-b2), b1 and b2 and the three normals of our triangle n1, n2, n3 to find the normal vector n (= (1-b1-b2)*n1 + b1*n2 + b2*n3) of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
-
-        </p>
-        <br />
-
-        <strong>
-            Show images with normal shading for a few small .dae files.
-        </strong>
-
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="new_banana.png" align="middle" width="250px" />
-                        <figcaption>banana.dae</figcaption>
+                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
+                        <figcaption>α = 0.005</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBempty.png" align="middle" width="250px" />
-                        <figcaption>CBempty.dae</figcaption>
+                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
+                        <figcaption>α = 0.05</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBspheres.png" align="middle" width="250px" />
-                        <figcaption>CBspheres_lambertian.dae</figcaption>
+                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
+                        <figcaption>α = 0.25</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
+                        <figcaption>α = 0.5</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
+        <p>
+            As α, which corresponds to roughness, increases from 0.005 to 0.5, we see that the surface of the material making
+            up our dragon gets less smooth and glossy. However as this is the angle
+            between our half vector h and macro surface normal n we also see that as this angle increases, the specularity decreases and hence noise
+            decreases. This is why the images get duller but clearer as we move from left to right.
+        </p>
         <br />
+
+
+        <strong>
+            Show two images of scene CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling (default) and your importance sampling. The sampling rate should be fixed at 64 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Briefly discuss their difference.
+        </strong>
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="CBbunny_cosine.png" align="middle" width="500px" />
+                        <figcaption>Cosine Hemisphere Sampling (Default)</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBbunny_importance.png" align="middle" width="500px" />
+                        <figcaption>Our Implementation of Importance Sampling</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>
+            On the left is an image rendered using cosine hemisphere sampling, which is perfect for importance sampling diffuse BRDFs.
+            However since we are using the microfacet model and we use Beckman distribution to describe how the microfacet's normals are
+            distributed, we need to use a sampler that accurately shapes the Beckman distribution. This is why as we move from
+            cosine hemisphere sampling to our implementation of importance sampling using Beckman NDF, we see the noise getting
+            reduced significantly and the surface of the rabbit getting clearer as the normals are more accurately distributed.
+        </p>
+        <br />
+
+        <strong>
+            Show at least one image with some other conductor material, replacing eta and k. Note that you should look up values for real data rather than modifying them arbitrarily. Tell us what kind of material your parameters correspond to.
+        </strong>
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="CBdragon_carbon_0.5.png" align="middle" width="500px" />
+                        <figcaption>Carbon</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_calcium_0.5.png" align="middle" width="500px" />
+                        <figcaption>Calcium</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>
+            We used the given website to compute the refractive index (eta) and extinction coefficient (k) at red, green
+            and blue wavelengths for two materials other than gold (which was used for the previous images)- carbon and calcium.
+        </p>
 
         <h2 align="middle">Part IV: Depth of Field</h2>
         <strong>
@@ -193,9 +226,9 @@
         </p>
 
         <p>
-            We (Suhrid and Shrihan) worked on this project together. We took turns coding on each of our computers and periodically pushing the code to GitHub to 
-            match between us. We did not work on the same function simultaneously due to merge errors, but instead worked together, with one person reading the spec 
-            as the other typed. The project went well, and was much easier to complete than 3-1. We learned some useful tools regarding how the thin-lens effect is 
+            We (Suhrid and Shrihan) worked on this project together. We took turns coding on each of our computers and periodically pushing the code to GitHub to
+            match between us. We did not work on the same function simultaneously due to merge errors, but instead worked together, with one person reading the spec
+            as the other typed. The project went well, and was much easier to complete than 3-1. We learned some useful tools regarding how the thin-lens effect is
             achieved, as well as how the microfacet-BSDF texture isw produced to realistically light surface reflections.
         </p>
     </div></body>
