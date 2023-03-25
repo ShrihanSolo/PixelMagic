@@ -53,6 +53,9 @@
             Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
         </p>
         <p>
+            Link to Github Website: <a> https://github.com/ShrihanSolo/proj-webpage-template </a>
+        </p>
+        <p>
             In this project, we add in some final changes to the staff code for Project 3-1 to complete our pathtracer, namely Part 2: Microfacet Material, and Part
             4: Depth of Field.
         </p>
@@ -193,29 +196,77 @@
         </p>
         <br />
         <strong>
-            Pick two scenes and render them with at least 2048 samples per pixel. Show a good sampling rate image with clearly visible differences in sampling rate over various regions and pixels. Include both your sample rate image, which shows your how your adaptive sampling changes depending on which part of the image you are rendering, and your noise-free rendered result. Use 1 sample per light and at least 5 for max ray depth.
+            Show a "focus stack" where you focus at 4 visibly different depths through a scene. Make sure to include all screenshots.
         </strong>
+        <p>
+            The focus was accomplished by tracing the typical camera ray (red ray) until the focal distance and finding the intersection point. We then trace a ray 
+            from the lens onto this point, and call this the lens ray (blue ray). We uniformly sample the lens to decide the position of the lens where the ray 
+            originates from. This works since there is a one-one mapping between the lensed ray positions and the origin of the ray. Therefore, both a lensed ray
+            and a ray that passes through the center of the lens must meet at the same point. By uniformly sampling the lens, calculating the blue ray, and then
+            converting this ray from camera to world coordinates, we determine the final ray and can determine the lens effect.
+        </p>
+        <p>
+            The following images were generated with 512 samples per pixel, maximum ray depth of 12, 16 light rays, and varying focal depth. The dragon has a roughness 
+            alpha = 0.005. The lens radius is set to 0.23.
+        </p>
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="spheres_part5.png" align="middle" width="400px" />
-                        <figcaption>CBspheres.dae</figcaption>
+                        <img src="CBdragon_microfacet_au_s512_a64_m12_l16_d45.png" align="middle" width="400px" />
+                        <figcaption>Depth = 4.5</figcaption>
                     </td>
                     <td>
-                        <img src="bunny_part5.png" align="middle" width="400px" />
-                        <figcaption>CBbunny.dae</figcaption>
+                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d475.png" align="middle" width="400px" />
+                        <figcaption>Depth = 4.75</figcaption>
                     </td>
                 </tr>
                 </br>
                 <tr align="center">
                     <td>
-                        <img src="spheres_part5_rate.png" align="middle" width="400px" />
-                        <figcaption>CBspheres.dae Sample rate</figcaption>
+                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d50.png" align="middle" width="400px" />
+                        <figcaption>Depth = 5.0</figcaption>
                     </td>
                     <td>
-                        <img src="bunny_part5_rate.png" align="middle" width="400px" />
-                        <figcaption>CBbunny.dae Sample rate</figcaption>
+                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d525.png" align="middle" width="400px" />
+                        <figcaption>Depth = 5.25</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <strong>
+            Show a sequence of 4 pictures with visibly different aperture sizes, all focused at the same point in a scene. Make sure to include all screenshots.
+        </strong>
+        <p>
+            The lens radius affects the degree of focus. We notice that for higher lens radius, the area away from the focal distance becomes significantly more
+            unfocused.
+        </p>
+        <p>
+            The following images were generated with 128 samples per pixel, maximum ray depth of 7, 4 light rays, and varying lens radius. The dragon has a roughness
+            alpha = 0.25. The depth is set to 4.75.
+        </p>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="CBdragon_microfacet_au_b03.png" align="middle" width="400px" />
+                        <figcaption>Lens Radius = 0.03</figcaption>
+                    </td>
+                    <td>
+                        <img src="CBdragon_microfacet_au_b13.png" align="middle" width="400px" />
+                        <figcaption>Lens Radius = 0.13</figcaption>
+                    </td>
+                </tr>
+                </br>
+                <tr align="center">
+                    <td>
+                        <img src="CBdragon_microfacet_au_b23.png" align="middle" width="400px" />
+                        <figcaption>Lens Radius = 0.23</figcaption>
+                    </td>
+                    <td>
+                        <img src="CBdragon_microfacet_au_b33.png" align="middle" width="400px" />
+                        <figcaption>Lens Radius = 0.33</figcaption>
                     </td>
                 </tr>
             </table>
@@ -223,6 +274,9 @@
         <br />
         <p>
             Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
+        </p>
+        <p>
+            Link to Github Website: <a> https://github.com/ShrihanSolo/proj-webpage-template </a>
         </p>
 
         <p>
