@@ -77,6 +77,16 @@
 
         <h2 align="middle">Part II: Microfacet Material</h2>
 
+        <p>
+            We implemented the BRDF evaluation function f, Normal Distribution function D and Fresnel Term F exactly
+            according to the formulae mentioned in the spec, in terms of wi, wo and the half vector h (= wi + wo and
+            then normalized). Note that for D, cos_theta = h.z and for F, cos_theta = wi.z. Then we implemented the
+            BRDF sampling function sample_f. It just returns f(wo, wi) if wi is valid. We also change pdf (which is
+            the probability density for wi w.r.t solid angle here) to pdf for h w.r.t solid angle divided by 4 times
+            the dot product of h and wi. Here h and its pdf was computed exactly according to the formulae given to us,
+            that is, using the pdfs and the samples of theta and phi which define the coordinate system for h.
+        </p>
+
 
         <strong>
             Show a screenshot sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with
