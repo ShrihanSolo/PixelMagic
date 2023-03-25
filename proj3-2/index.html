@@ -1,7 +1,199 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    background-color: white;
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  kbd {
+    color: #121212;
+  }
+  strong { font-weight: bold; }
+</style>
+<title>CS 184: Pathtracer</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 3-2: Pathtracer II</h1>
+<h2 align="middle">SUHRID SAHA, SHRIHAN AGARWAL</h2>
+
+<br><br>
+
+    <div>
+
+        <h2 align="middle">Overview</h2>
+        <p>
+            Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
+        </p>
+        <p>
+            In this project, we add in some final changes to the staff code for Project 3-1 to complete our pathtracer, namely Part 2: Microfacet Material, and Part 
+            4: Depth of Field.
+        </p>
+        <p>
+            In Part 2, we implement microfacet models for various different textures: copper, gold, and aluminium/silver, for the bunny, dragon, and spheres. We replace
+            the typical reflectance formulae with the revised MicrofacetBSDF::f() formula, which takes into account the roughness of the material and air-conductor reflectance.
+            We utilize the air-conductor Fresnel term F(), the Normal Distribution function D(), and combine them with the input and output ray directions to obtain a 
+            more accurate surface reflectance. Lastly, we implement importance sampling correctly for the microfacet BSDF according to the Beckmann Normal Distribution 
+            Function.
+        </p>
+        <p>
+            In Part 4, we implement the thin-lens approximation in order to add a depth-of-field effect to our renders. Our eyes, glasses, and contacts all have lenses,
+            which means that only one particular depth is entirely in focus at once, unlike the pinhole-camera like rendered images we have been generating upto this 
+            point. We accomplish this depth of field effect by placing a thin refractive lens in front of the camera, with variable lens radius, focal distance, and position.
+        </p>
+        <p>
+            In all, this project allows us to generate multiple different 3D environments with global illumination, realistic surface textures and lighting, and depth-of-field
+            effect. The project does not accurately model refraction or environmental light correctly, however, since we chose not to implement the (optional) Part 1 and Part 3.
+        </p>
+        <br />
+
+
+        <h2 align="middle">Part II: Ray Generation and Scene Intersection</h2>
+
+
+        <strong>
+            Walk through the ray generation and primitive intersection parts of the rendering pipeline.
+        </strong>
+        <p>
+            <strong>RAY GENERATION: </strong>
+            The purpose of ray-generation is to generate a ray from the camera’s perspective but in the world coordinate system.
+
+            So we find the equation for the vector pointing from the camera to our pixel (which has coordinates x,y in the image space) but in the camera’s coordinate system.
+            Since the bottom left corner was at (-tan(0.5*hFov), -tan(0.5*vFov), -1) and the top right corner was (tan(0.5*hFov), tan(0.5*vFov), -1) we calculated that this vector
+            (still in the camera’s coordinate system) would be ((2x-1)*tan(0.5*hFov)/2, (2x-1)*tan(0.5 x vFov)/2, -1).
+
+            We then convert this vector from the camera’s coordinate system to the world’s coordinate system by multiplying by the “c2w” matrix provided- which transforms from the
+            camera to the world coordinates. We then call this transformed vector as the camera ray direction and normalize it. Given this normalized camera ray direction
+            (in the world coordinate system) and the position of the camera in ‘world’, we get a ray pointing from the camera to our pixel in the world and set its min_t and
+            max_t to nClip and fClip respectively.
+
+            We then use this ray to update the illumination of our pixel in the image and to check for intersections with shapes and objects and render our image accordingly.
+            For the former, we just use this camera generated ray, generate multiple random samples in the pixel and use “estimate_global_illumination” with this ray and average
+            over the samples to find the illumination of the pixel.
+            <br />
+
+            <strong>PRIMITIVE INTERSECTION:</strong>
+            We check for intersection of our camera generated rays with primitives to check for which points on our surface does the light bounce off of. We check for intersection of our rays with two kinds of primitives- triangles and spheres, since they have different intersection equations.
+            For the triangles, we have coordinates for its three vertices and its three normals. To find where any given ray intersects the said triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
+            For the spheres, we have coordinates for its center and the value for its radius. We use the equations in the ray-sphere intersection slides from the ray tracing lecture to get a quadratic equation, solving which gives us either two, one or zero points of intersection between the ray and sphere. The ‘t’ values at these intersections are then checked for being within the range (min_t, max_t), because if they are not, we return false. We choose the point closer to the camera in case of two points. We also find the normal at the nearest point of intersection by taking the difference between the coordinates of the point of intersection and the coordinates of the origin.
+            In either primitive intersection, we store the information like the value of t, the normal vector at intersection, the bsdf and the primitive itself in an intersection object which we have a pointer to. This is used later when we compute illumination with bounces.
+
+        </p>
+        <br />
+
+
+        <strong>
+            Explain the triangle intersection algorithm you implemented in your own words.
+        </strong>
+        <p>
+            To find where any given ray intersects the triangle, we use the Möller–Trumbore ray-triangle intersection algorithm, which uses the vertices of the triangle and the origin and direction vector of our ray to find not only the nearest intersection point but also the barycentric coordinates of this point. We then also use these barycentric coordinates and the three normals of our triangle to find the normal vector of the intersection.
+            The algorithm is based on the following math: We know that for barycentric coordinates (1-b1-b2), b1 and b2 and vertices v1, v2 and v3 out point of intersection is P = (1-b1-b2)*v1 + b1*v2 + b2*v3. We also know that for some t, we must have P = o + t*d where the ray has origin o and direction vector d. Then we have o + t*d = (1-b1-b2)*v1 + b1*v2 + b2*v3 which gives us a system of three linear equations to solve for t, b1 and b2. If we use Cramer’s rule to solve for this 3d vector and simplify the determinant in the denominator as a combination of a cross product and dot product, we get three equations for t, b1 and b2, hence giving us our solution. This final equation for the solution only takes 1 division, 27 multiplications and 17 additions to compute, much faster than any other method we can use and is mentioned in the lecture slides- entirely in terms of v1, v2, v3, o and d. We use exactly this in our code.
+            We then also use (1-b1-b2), b1 and b2 and the three normals of our triangle n1, n2, n3 to find the normal vector n (= (1-b1-b2)*n1 + b1*n2 + b2*n3) of the intersection. We also know if these barycentric coordinates lie outside the range (0,1) or the ‘t’ for which the ray intersects lies outside the range (min_t, max_t) then the intersection is false.
+
+        </p>
+        <br />
+
+        <strong>
+            Show images with normal shading for a few small .dae files.
+        </strong>
+
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="new_banana.png" align="middle" width="250px" />
+                        <figcaption>banana.dae</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBempty.png" align="middle" width="250px" />
+                        <figcaption>CBempty.dae</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBspheres.png" align="middle" width="250px" />
+                        <figcaption>CBspheres_lambertian.dae</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+        <h2 align="middle">Part IV: Depth of Field</h2>
+        <strong>
+            Explain adaptive sampling. Walk through your implementation of the adaptive sampling.
+        </strong>
+        <p>
+            The point of adaptive sampling is to avoid the problem of using a static and high number of samples per pixel, by only using more samples in the more difficult parts of the image, that is where the illumination doesn’t converge as easily. So what we do is we find a convergence criterion, that is, some value in terms of the illuminations of our samples must be within some desired tolerance, and once this criterion is satisfied for a given pixel we stop sampling. This makes sure that we do not compromise on noise despite reducing the total number of samples used in pixels.
+            We implemented adaptive sampling as follows: for each pixel, we compute the illumination (using global illumination) by taking the average over multiple random samples. As we take each sample, for every samples_per_batch (set to 32) samples, we maintain the mean and variance of the “illum()” of our illumination vectors (which have R, G and B components). If 1.96 times the standard deviation (square root of variance) divided by the square root of the number of samples so far is within the mean times the maximum tolerance (which we set to a default of 0.05) then we know our samples inside this pixel have converged within our desired tolerance. This equation (using a factor of 1.96) is based on wanting a 95% confidence interval. If this criterion is satisfied we stop sampling and return the average illumination for this pixel so far. Otherwise we continue sampling either until the criterion is satisfied for a higher number of samples or if the number of samples has reached its limit (set to ns_aa).
+        </p>
+        <br />
+        <strong>
+            Pick two scenes and render them with at least 2048 samples per pixel. Show a good sampling rate image with clearly visible differences in sampling rate over various regions and pixels. Include both your sample rate image, which shows your how your adaptive sampling changes depending on which part of the image you are rendering, and your noise-free rendered result. Use 1 sample per light and at least 5 for max ray depth.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="spheres_part5.png" align="middle" width="400px" />
+                        <figcaption>CBspheres.dae</figcaption>
+                    </td>
+                    <td>
+                        <img src="bunny_part5.png" align="middle" width="400px" />
+                        <figcaption>CBbunny.dae</figcaption>
+                    </td>
+                </tr>
+                </br>
+                <tr align="center">
+                    <td>
+                        <img src="spheres_part5_rate.png" align="middle" width="400px" />
+                        <figcaption>CBspheres.dae Sample rate</figcaption>
+                    </td>
+                    <td>
+                        <img src="bunny_part5_rate.png" align="middle" width="400px" />
+                        <figcaption>CBbunny.dae Sample rate</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <p>
+            Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
+        </p>
+
+        <p>
+            We (Suhrid and Shrihan) worked on this project together. We took turns coding on each of our computers and periodically pushing the code to GitHub to 
+            match between us. We did not work on the same function simultaneously due to merge errors, but instead worked together, with one person reading the spec 
+            as the other typed. The project went well, and was much easier to complete than 3-1. We learned some useful tools regarding how the thin-lens effect is 
+            achieved, as well as how the microfacet-BSDF texture isw produced to realistically light surface reflections.
+        </p>
+    </div></body>
 </html>
