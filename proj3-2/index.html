@@ -149,11 +149,14 @@
 
         <h2 align="middle">Part IV: Depth of Field</h2>
         <strong>
-            Explain adaptive sampling. Walk through your implementation of the adaptive sampling.
+            In a few sentences, explain the differences between a pinhole camera model and a thin-lens camera model.
         </strong>
         <p>
-            The point of adaptive sampling is to avoid the problem of using a static and high number of samples per pixel, by only using more samples in the more difficult parts of the image, that is where the illumination doesn’t converge as easily. So what we do is we find a convergence criterion, that is, some value in terms of the illuminations of our samples must be within some desired tolerance, and once this criterion is satisfied for a given pixel we stop sampling. This makes sure that we do not compromise on noise despite reducing the total number of samples used in pixels.
-            We implemented adaptive sampling as follows: for each pixel, we compute the illumination (using global illumination) by taking the average over multiple random samples. As we take each sample, for every samples_per_batch (set to 32) samples, we maintain the mean and variance of the “illum()” of our illumination vectors (which have R, G and B components). If 1.96 times the standard deviation (square root of variance) divided by the square root of the number of samples so far is within the mean times the maximum tolerance (which we set to a default of 0.05) then we know our samples inside this pixel have converged within our desired tolerance. This equation (using a factor of 1.96) is based on wanting a 95% confidence interval. If this criterion is satisfied we stop sampling and return the average illumination for this pixel so far. Otherwise we continue sampling either until the criterion is satisfied for a higher number of samples or if the number of samples has reached its limit (set to ns_aa).
+            Both are simplified mathematical models that can be used to describe how light is received by a camera to create an image. A pinhole camera has no depth-of field
+            effect. This is because a pinhole camera allows a limited amount of light to enter from the object through the pinhole, and produces an inverted image on the opposite 
+            side, with no refraction. It neglects lens distortion. The thin-lens camera model assumes that the light passes through a thin-lens before reaching the camera,
+            akin to how an eye works. This creates a depth of field effect, where objects outside the focus distance appear unfocused. The model takes into account lens distortion
+            and other optical factors.
         </p>
         <br />
         <strong>
