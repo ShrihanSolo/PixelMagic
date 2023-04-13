@@ -136,82 +136,160 @@
             </table>
         </div>
         <br />
-
-
-        <h2 align="middle">Part II</h2>
-
-        <p>
-            k
-        </p>
-
+        <h2 align="middle">Part 2: Simulation via numerical integration</h2>
 
         <strong>
-            k
+            Experiment with some the parameters in the simulation. To do so, pause the simulation at the start with P, modify the values of interest, and then resume by pressing P again. You can also restart the simulation at any time from the cloth's starting position by pressing R.
         </strong>
-        <!-- Example of including multiple figures -->
-        <div align="middle">
-            <table style="width:100%">
-                <tr align="center">
-                    <td>
-                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
-                        <figcaption>α = 0.005</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
-                        <figcaption>α = 0.05</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
-                        <figcaption>α = 0.25</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
-                        <figcaption>α = 0.5</figcaption>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <br />
         <br />
 
-        <h2 align="middle">Part III</h2>
-
-        <p>
-            k
-        </p>
-
-
         <strong>
-            k
+            Describe the effects of changing the spring constant ks; how does the cloth behave from start to rest with a very low ks? A high ks?
         </strong>
+        <p>
+            As I changed spring constant ks, I observed that the cloth movement changed. With higher ks, the cloth
+            seemed to get more rigid as there was more resistive force in each spring joining point masses in the
+            cloth. With lower ks, the resistive forces reduced and the cloth seemed to get more flowy and flexible.
+        </p>
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
-                        <figcaption>α = 0.005</figcaption>
+                        <img src="p2ks500d15.png" align="middle" width="250px" />
+                        <figcaption>ks = 500</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
-                        <figcaption>α = 0.05</figcaption>
+                        <img src="p2ks5000d15.png" align="middle" width="250px" />
+                        <figcaption>ks = 5000</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
-                        <figcaption>α = 0.25</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
-                        <figcaption>α = 0.5</figcaption>
+                        <img src="p2ks50000d15.png" align="middle" width="250px" />
+                        <figcaption>ks = 50000</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
+
+        <strong>
+            What about for density?
+        </strong>
+        <p>
+            As density increased, the point masses being more compactly arranged on the cloth surface. This causes
+            the cloth get pulled harder, and so when it hangs, there seems to be stronger force pulling it downward.
+            This is despite the downward acceleration staying constant. We observe a similar effect in increasing
+            density as we do in reducing the spring constant ks.
+        </p>
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p2ks5000d1.png" align="middle" width="250px" />
+                        <figcaption>ρ = 1 g/sqcm</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p2ks5000d15.png" align="middle" width="250px" />
+                        <figcaption>ρ = 15 g/sqcm</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p2ks5000d60.png" align="middle" width="250px" />
+                        <figcaption>ρ = 60 g/sqcm</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <strong>
+            What about for damping?
+        </strong>
+        <p>
+            As damping increases, the resistive forces in the spring increase which cause the cloth to move less
+            and so for low damping we observe a more flowy cloth that moves more.
+        </p>
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p2damp005.png" align="middle" width="250px" />
+                        <figcaption>d = 0.005</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p2damp02.png" align="middle" width="250px" />
+                        <figcaption>d = 0.02</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p2damp05.png" align="middle" width="250px" />
+                        <figcaption>d = 0.05</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <strong>
+            For each of the above, observe any noticeable differences in the cloth compared to the default parameters and show us some screenshots of those interesting differences and describe when they occur.
+        </strong>
+        <br />
+        <strong>
+            Show us a screenshot of your shaded cloth from scene/pinned4.json in its final resting state! If you choose to use different parameters than the default ones, please list them.
+        </strong>
+        <p>
+            <div align="middle">
+                <img src="p2-1.png" align="middle" width="500px" />
+                <figcaption>scene/pinned4.json (Default parameters)</figcaption>
+            </div>
+        </p>
+        <br />
+
+        <h2 align="middle">Part 3: Handling collisions with other objects</h2>
+
+        <strong>
+            Show us screenshots of your shaded cloth from scene/sphere.json in its final resting state on the sphere using the default ks = 5000 as well as with ks = 500 and ks = 50000. Describe the differences in the results.
+        </strong>
+        <p>
+            As the spring constant ks increases, we notice an increase in the resistive forces in the springs
+            on the cloth. So for higher ks, we see the edges of the cloth pulled away to the center as it
+            seems like the cloth moving lesser due to higher resistive forces.
+        </p>
+        <!-- Example of including multiple figures -->
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p3ks500.png" align="middle" width="250px" />
+                        <figcaption>ks = 500</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p3ks5000.png" align="middle" width="250px" />
+                        <figcaption>ks = 5000</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p3ks50000.png" align="middle" width="250px" />
+                        <figcaption>ks = 50000</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <strong>
+            Show us a screenshot of your shaded cloth lying peacefully at rest on the plane. If you haven't by now, feel free to express your colorful creativity with the cloth! (You will need to complete the shaders portion first to show custom colors.)
+        </strong>
+        <p>
+            <div align="middle">
+                <img src="p3plane.png" align="middle" width="500px" />
+                <figcaption>Shaded cloth at rest on plane.json</figcaption>
+            </div>
+        </p>
         <br />
 
         <h2 align="middle">Part IV</h2>
@@ -305,44 +383,152 @@
         </div>
         <br />
 
-
-
-        <h2 align="middle">Part V</h2>
-
-        <p>
-            k
-        </p>
-
+        <h2 align="middle">Part 5: Shaders</h2>
 
         <strong>
-            k
+            Explain in your own words what is a shader program and how vertex and fragment shaders work together to create lighting and material effects.
         </strong>
-        <!-- Example of including multiple figures -->
+        <p>
+            A shader program is used to create effects on 3D objects in graphics to simulate lighting and materials.
+            They could be either vertex shaders or fragment shaders, which work together to create realistic graphics
+            models using aforementioned lighting and materials effects. By computing the properties (e.g. positions) of vertices
+            and calculating the final color of each pixel, shaders enable simulation of realistic and complex 3D models.
+            Here vertex shaders help compute the positions and control/tweak properties of vertices in a 3D model; they
+            take data such as vertex positions, normal vectors, texture coordinates, etc. as input and convert them into
+            output to be used by 3D models, using transforming vertex positions, calculating lighting/shading, mapping textures
+            to surfaces, etc. On the other hand, fragment shaders use pixels instead of vertices. They determine the color of
+            each pixel in the rendered model. They use material properties, reflections/refractions,transparency and blending in
+            order to use input from vertex shaders to form realistic 3D models.
+        </p>
+
+        <strong>
+            Explain the Blinn-Phong shading model in your own words. Show a screenshot of your Blinn-Phong shader outputting only the ambient component, a screen shot only outputting the diffuse component, a screen shot only outputting the specular component, and one using the entire Blinn-Phong model.
+        </strong>
+        <p>
+            Blinn-Phong Model uses the effects of multiple light sources to compute the color coordinates at each pixel in
+            a 3D model. It uses 3 components to compute this- ambient lighting, which refers to a fixed background lighting
+            present in a frame; diffuse lighting, which refers to light reflected by a surface in all directions uniformly;
+            and specular lighting, which refers to the reflection from a light source in a specific direction, producing
+            shiny highlights.
+        </p>
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
-                        <figcaption>α = 0.005</figcaption>
+                        <img src="p5ambient.png" align="middle" width="250px" />
+                        <figcaption>Only Ambient Component</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
-                        <figcaption>α = 0.05</figcaption>
+                        <img src="p5diffuse.png" align="middle" width="250px" />
+                        <figcaption>Only Diffuse Component</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
-                        <figcaption>α = 0.25</figcaption>
+                        <img src="p5specular.png" align="middle" width="250px" />
+                        <figcaption>Only Specular Component</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
-                        <figcaption>α = 0.5</figcaption>
+                        <img src="p5phong.png" align="middle" width="250px" />
+                        <figcaption>Phong Shading</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
+
+        <strong>
+            Show a screenshot of your texture mapping shader using your own custom texture by modifying the textures in /textures/.
+        </strong>
+        <p>
+            <div align="middle">
+                <img src="p5sid.png" align="middle" width="500px" />
+                <figcaption>Custom Texture Mapping</figcaption>
+            </div>
+        </p>
+
+        <strong>
+            Show a screenshot of bump mapping on the cloth and on the sphere. Show a screenshot of displacement mapping on the sphere. Use the same texture for both renders. You can either provide your own texture or use one of the ones in the textures directory, BUT choose one that's not the default texture_2.png. Compare the two approaches and resulting renders in your own words. Compare how your the two shaders react to the sphere by changing the sphere mesh's coarseness by using -o 16 -a 16 and then -o 128 -a 128.
+        </strong>
+        <p>
+            Bump mapping is a technique that simulates a bumpy or textured surface in a 3D model without
+            really changing the geometry of the model because it uses a texture map to manipulate the
+            normal vectors to the surface at each point, giving the appearance of dimension and bumpiness. This
+            mapping method is faster and helpful for enhancing minute details of a model.
+            On the other hand, displacement mapping changes the geometry of a 3D model to add depth and roughness
+            to a surface. It uses the texture maps to displace the vertex positions in the model in order to create
+            the appearance of a bumpy or textured surface. Since this method is more realistic and detailed, it tends
+            to be slower and expensive in terms of memory.
+        </p>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p5disp2sphere.png" align="middle" width="250px" />
+                        <figcaption>Default Bump Mapping on Sphere</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5bump2.png" align="middle" width="250px" />
+                        <figcaption>Default Bump Mapping on Cloth</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5bump2o16.png" align="middle" width="250px" />
+                        <figcaption>Bump Mapping -o 16 -a 16</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5disp2o128.png" align="middle" width="250px" />
+                        <figcaption>Bump Mapping -o 128 -a 128</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p5bump2sphere.png" align="middle" width="250px" />
+                        <figcaption>Default Displacement Mapping on Sphere</figcaption>
+                    </td>
+                    <td>
+                        <img src="p5disp2.png" align="middle" width="250px" />
+                        <figcaption>Default Displacement Mapping on Cloth</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5disp2o16.png" align="middle" width="250px" />
+                        <figcaption>Displacement Mapping -o 16 -a 16</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5bump2o128.png" align="middle" width="250px" />
+                        <figcaption>Displacement Mapping -o 128 -a 128</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <strong>
+            Show a screenshot of your mirror shader on the cloth and on the sphere.
+        </strong>
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p5mirror.png" align="middle" width="250px" />
+                        <figcaption>Mirror shader on cloth</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p5mirrorball.png" align="middle" width="250px" />
+                        <figcaption>Mirror shader on sphere</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <br />
         <p>
             Link to Github: <a> https://github.com/cal-cs184-student/p4-clothsim-sp23-pixelmagiq </a>
