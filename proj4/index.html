@@ -20,6 +20,7 @@
   }
   strong { font-weight: bold; }
 </style>
+
 <title>CS 184: Pathtracer</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
@@ -56,48 +57,87 @@
             Link to Github Website: <a> https://github.com/ShrihanSolo/proj-webpage-template </a>
         </p>
         <p>
-            k
+            In this project, our primary focus was to create a real-time simulation of cloth, which involved implementing a mass and spring-based system. 
+            To accomplish this, we implemented the following parts.
+        </p>
+        <p>
+            Firstly, we set out to construct the appropriate data structures, a hashmap and vector of pointmasses and springs, that would allow us to 
+            represent the cloth in terms of point mass locations and spring connections. This was necessary to improve the computational runtime and store the
+            cloth effectively in memory. 
+        </p>
+        <p>
+            Secondly, we aimed to establish and enforce physical constraints on the cloth. The physical constraints maintain the physical evolution of the cloth in time.
+            We applied three constraints: structural, shear, and bending. To achieve this, we also utilized various physical properties such as density, gravity, and damping
+            to create a realistic simulation. 
+        </p>
+        <p>
+            Thirdly, we utilized numerical integration to simulate how the cloth moves over time. This involved approximating the motion of the cloth at discrete
+            time intervals. We used Verlet integration to accomplish this. 
+        </p>   
+        <p>
+            Fourth, we addressed the issue of collisions. We incorporated collision detection with other objects in Part 3 to ensure that the cloth would interact
+            realistically with its environment, specifically a sphere. We also implemented self-collision detection to prevent the cloth from clipping or 
+            intersecting with itself, which allowed us to perform a more realistic simulation of a cloth crumpling on a plane in part 4. 
+        </p>
+        <p>
+            Finally, we used GLSL shaders to create texture, bump, displacement, mirror and other types of mappings to our cloth and the sphere it lands on.
+            This was efficient and allowed a real time evolution of the textures during the simulation.
+        </p>
+        <p>    
+            In summary, we undertook various critical tasks to develop a real-time simulation of cloth using a mass and spring-based system. We constructed the 
+            necessary data structures, established physical constraints, leveraged numerical integration, addressed the issue of collisions and implemented shaders
+            to create an accurate and realistic simulation.
         </p>
         <br />
 
 
         <h2 align="middle">Part I</h2>
 
-        <p>
-            k
-        </p>
-
-
         <strong>
-            k
+            Take some screenshots of scene/pinned2.json from a viewing angle where you can clearly see the 
+            cloth wireframe to show the structure of your point masses and springs.
         </strong>
+        <br />
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
-                        <figcaption>α = 0.005</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
-                        <figcaption>α = 0.05</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
-                        <figcaption>α = 0.25</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
-                        <figcaption>α = 0.5</figcaption>
+                        <img src="p1allConstraints.png" align="middle" width="750px" />
+                        <figcaption>Close-up View of Cloth Mesh Structure</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
         <br />
+
+        <strong>
+            Show us what the wireframe looks like (1) without any shearing constraints, (2) with only shearing constraints, and (3) with all constraints.
+        </strong>
+        <br />
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p1noShear.png" align="middle" width="300px" />
+                        <figcaption>No Shear Constraint</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p1shear.png" align="middle" width="300px" />
+                        <figcaption>Only Shear Constraint</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p1allConstraints.png" align="middle" width="300px" />
+                        <figcaption>All Constraints: Structural, Shear, Bending</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
         <h2 align="middle">Part II</h2>
 
         <p>
@@ -176,41 +216,96 @@
 
         <h2 align="middle">Part IV</h2>
 
-        <p>
-            k
-        </p>
-
-
         <strong>
-            k
+            Show us at least 3 screenshots that document how your cloth falls and folds on itself, starting with an early, initial self-collision and 
+            ending with the cloth at a more restful state (even if it is still slightly bouncy on the ground).
         </strong>
+        <br />
+
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
-                        <figcaption>α = 0.005</figcaption>
+                        <img src="p4t1.png" align="middle" width="450px" />
+                        <figcaption> Time Step = 1</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
-                        <figcaption>α = 0.05</figcaption>
+                        <img src="p4t2.png" align="middle" width="450px" />
+                        <figcaption> Time Step = 2</figcaption>
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td>
+                        <img src="p4t3.png" align="middle" width="450px" />
+                        <figcaption>Time Step = 3</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
-                        <figcaption>α = 0.25</figcaption>
-                    </td>
-
-                    <td>
-                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
-                        <figcaption>α = 0.5</figcaption>
+                        <img src="p4t4.png" align="middle" width="450px" />
+                        <figcaption>Time Step = 4</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
         <br />
+
+        <strong>
+            Vary the density as well as ks and describe with words and screenshots how they affect the behavior of the cloth as it falls on itself.
+        </strong>
+        <p>
+            We present 6 images below. In the first row, the spring constant is invariant while the density is changed. In the second, the density is kept 
+            constant as the spring constant is changed. We notice that for low density, the sheet crumples more slowly on hitting the floor, instead forming a more 
+            gentle wave. With increasing density, the crumpling becomes more significant.
+        </p>
+        <p>
+            In the second row, we notice that for low spring constant, the sheet is less resistant to deformation, and the spring forces are not sufficient to 
+            maintain the sheet's internal structure. This means that it crumples almost immediately on hitting the ground. The higher spring constant values allow
+            a much stronger internal structure, preventing high frequency waves in the crumpling of the sheet. 
+        </p>
+
+        <br />
+
+        <div align="middle">
+            <table style="width:100%">
+                <tr align="center">
+                    <td>
+                        <img src="p4ks5000_d05.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 5000, Density = 0.5 g/cm^2 </figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p4ks5000_d15.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 5000, Density = 1.5 g/cm^2 </figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p4ks5000_d25.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 5000, Density = 2.5 g/cm^2 </figcaption>
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td>
+                        <img src="p4ks500_d15.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 500, Density = 1.5 g/cm^2 </figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p4ks5000_d15.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 5000, Density = 1.5 g/cm^2</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="p4ks50000_d15.png" align="middle" width="300px" />
+                        <figcaption> Spring ks = 50000, Density = 1.5 g/cm^2</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+
+
 
         <h2 align="middle">Part V</h2>
 
@@ -259,8 +354,8 @@
         <p>
             We (Suhrid and Shrihan) worked on this project together. We took turns coding on each of our computers and periodically pushing the code to GitHub to
             match between us. We did not work on the same function simultaneously due to merge errors, but instead worked together, with one person reading the spec
-            as the other typed. The project went well, and was much easier to complete than 3-1. We learned some useful tools regarding how the thin-lens effect is
-            achieved, as well as how the microfacet-BSDF texture isw produced to realistically light surface reflections.
+            as the other typed. The project went well. We learnt many new concepts, ranging from numerical integration, to physics-based simulation and how to create 
+            an accurate cloth model.
         </p>
     </div></body>
 </html>
