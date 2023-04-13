@@ -41,7 +41,7 @@
 <body>
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
-<h1 align="middle">Project 3-2: Pathtracer II</h1>
+<h1 align="middle">Project 4: Cloth Sim</h1>
 <h2 align="middle">SUHRID SAHA, SHRIHAN AGARWAL</h2>
 
 <br><br>
@@ -50,51 +50,26 @@
 
         <h2 align="middle">Overview</h2>
         <p>
-            Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
+            Link to Github: <a> https://github.com/cal-cs184-student/p4-clothsim-sp23-pixelmagiq </a>
         </p>
         <p>
             Link to Github Website: <a> https://github.com/ShrihanSolo/proj-webpage-template </a>
         </p>
         <p>
-            In this project, we add in some final changes to the staff code for Project 3-1 to complete our pathtracer, namely Part 2: Microfacet Material, and Part
-            4: Depth of Field.
-        </p>
-        <p>
-            In Part 2, we implement microfacet models for various different textures: copper, gold, and aluminium/silver, for the bunny, dragon, and spheres. We replace
-            the typical reflectance formulae with the revised MicrofacetBSDF::f() formula, which takes into account the roughness of the material and air-conductor reflectance.
-            We utilize the air-conductor Fresnel term F(), the Normal Distribution function D(), and combine them with the input and output ray directions to obtain a
-            more accurate surface reflectance. Lastly, we implement importance sampling correctly for the microfacet BSDF according to the Beckmann Normal Distribution
-            Function.
-        </p>
-        <p>
-            In Part 4, we implement the thin-lens approximation in order to add a depth-of-field effect to our renders. Our eyes, glasses, and contacts all have lenses,
-            which means that only one particular depth is entirely in focus at once, unlike the pinhole-camera like rendered images we have been generating upto this
-            point. We accomplish this depth of field effect by placing a thin refractive lens in front of the camera, with variable lens radius, focal distance, and position.
-        </p>
-        <p>
-            In all, this project allows us to generate multiple different 3D environments with global illumination, realistic surface textures and lighting, and depth-of-field
-            effect. The project does not accurately model refraction or environmental light correctly, however, since we chose not to implement the (optional) Part 1 and Part 3.
+            k
         </p>
         <br />
 
 
-        <h2 align="middle">Part II: Microfacet Material</h2>
+        <h2 align="middle">Part I</h2>
 
         <p>
-            We implemented the BRDF evaluation function f, Normal Distribution function D and Fresnel Term F exactly
-            according to the formulae mentioned in the spec, in terms of wi, wo and the half vector h (= wi + wo and
-            then normalized). Note that for D, cos_theta = h.z and for F, cos_theta = wi.z. Then we implemented the
-            BRDF sampling function sample_f. It just returns f(wo, wi) if wi is valid. We also change pdf (which is
-            the probability density for wi w.r.t solid angle here) to pdf for h w.r.t solid angle divided by 4 times
-            the dot product of h and wi. Here h and its pdf was computed exactly according to the formulae given to us,
-            that is, using the pdfs and the samples of theta and phi which define the coordinate system for h.
+            k
         </p>
 
 
         <strong>
-            Show a screenshot sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with
-            α set to 0.005, 0.05, 0.25 and 0.5. The other settings should be at least 128 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Describe the differences between different images. Note that, to change the
-            α, just open the .dae file and search for microfacet.
+            k
         </strong>
         <!-- Example of including multiple figures -->
         <div align="middle">
@@ -122,158 +97,160 @@
                 </tr>
             </table>
         </div>
-        <p>
-            As α, which corresponds to roughness, increases from 0.005 to 0.5, we see that the surface of the material making
-            up our dragon gets less smooth and glossy. However as this is the angle
-            between our half vector h and macro surface normal n we also see that as this angle increases, the specularity decreases and hence noise
-            decreases. This is why the images get duller but clearer as we move from left to right.
-        </p>
         <br />
+        <h2 align="middle">Part II</h2>
+
+        <p>
+            k
+        </p>
 
 
         <strong>
-            Show two images of scene CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling (default) and your importance sampling. The sampling rate should be fixed at 64 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Briefly discuss their difference.
+            k
         </strong>
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBbunny_cosine.png" align="middle" width="500px" />
-                        <figcaption>Cosine Hemisphere Sampling (Default)</figcaption>
+                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
+                        <figcaption>α = 0.005</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBbunny_importance.png" align="middle" width="500px" />
-                        <figcaption>Our Implementation of Importance Sampling</figcaption>
+                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
+                        <figcaption>α = 0.05</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
+                        <figcaption>α = 0.25</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
+                        <figcaption>α = 0.5</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
-        <p>
-            On the left is an image rendered using cosine hemisphere sampling, which is perfect for importance sampling diffuse BRDFs.
-            However since we are using the microfacet model and we use Beckman distribution to describe how the microfacet's normals are
-            distributed, we need to use a sampler that accurately shapes the Beckman distribution. This is why as we move from
-            cosine hemisphere sampling to our implementation of importance sampling using Beckman NDF, we see the noise getting
-            reduced significantly and the surface of the rabbit getting clearer as the normals are more accurately distributed.
-        </p>
         <br />
 
+        <h2 align="middle">Part III</h2>
+
+        <p>
+            k
+        </p>
+
+
         <strong>
-            Show at least one image with some other conductor material, replacing eta and k. Note that you should look up values for real data rather than modifying them arbitrarily. Tell us what kind of material your parameters correspond to.
+            k
         </strong>
         <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_carbon_0.5.png" align="middle" width="500px" />
-                        <figcaption>Carbon</figcaption>
+                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
+                        <figcaption>α = 0.005</figcaption>
                     </td>
 
                     <td>
-                        <img src="CBdragon_calcium_0.5.png" align="middle" width="500px" />
-                        <figcaption>Calcium</figcaption>
+                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
+                        <figcaption>α = 0.05</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
+                        <figcaption>α = 0.25</figcaption>
+                    </td>
+
+                    <td>
+                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
+                        <figcaption>α = 0.5</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
+        <br />
+
+        <h2 align="middle">Part IV</h2>
+
         <p>
-            We used the given website to compute the refractive index (eta) and extinction coefficient (k) at red, green
-            and blue wavelengths for two materials other than gold (which was used for the previous images)- carbon and calcium.
+            k
         </p>
 
-        <h2 align="middle">Part IV: Depth of Field</h2>
+
         <strong>
-            In a few sentences, explain the differences between a pinhole camera model and a thin-lens camera model.
+            k
         </strong>
-        <p>
-            Both are simplified mathematical models that can be used to describe how light is received by a camera to create an image. A pinhole camera has no depth-of field
-            effect. This is because a pinhole camera allows a limited amount of light to enter from the object through the pinhole, and produces an inverted image on the opposite 
-            side, with no refraction. It neglects lens distortion. The thin-lens camera model assumes that the light passes through a thin-lens before reaching the camera,
-            akin to how an eye works. This creates a depth of field effect, where objects outside the focus distance appear unfocused. The model takes into account lens distortion
-            and other optical factors.
-        </p>
-        <br />
-        <strong>
-            Show a "focus stack" where you focus at 4 visibly different depths through a scene. Make sure to include all screenshots.
-        </strong>
-        <p>
-            The focus was accomplished by tracing the typical camera ray (red ray) until the focal distance and finding the intersection point. We then trace a ray 
-            from the lens onto this point, and call this the lens ray (blue ray). We uniformly sample the lens to decide the position of the lens where the ray 
-            originates from. This works since there is a one-one mapping between the lensed ray positions and the origin of the ray. Therefore, both a lensed ray
-            and a ray that passes through the center of the lens must meet at the same point. By uniformly sampling the lens, calculating the blue ray, and then
-            converting this ray from camera to world coordinates, we determine the final ray and can determine the lens effect.
-        </p>
-        <p>
-            The following images were generated with 512 samples per pixel, maximum ray depth of 12, 16 light rays, and varying focal depth. The dragon has a roughness 
-            alpha = 0.005. The lens radius is set to 0.23.
-        </p>
+        <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_microfacet_au_s512_a64_m12_l16_d45.png" align="middle" width="400px" />
-                        <figcaption>Depth = 4.5</figcaption>
+                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
+                        <figcaption>α = 0.005</figcaption>
                     </td>
+
                     <td>
-                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d475.png" align="middle" width="400px" />
-                        <figcaption>Depth = 4.75</figcaption>
+                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
+                        <figcaption>α = 0.05</figcaption>
                     </td>
-                </tr>
-                </br>
-                <tr align="center">
+
                     <td>
-                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d50.png" align="middle" width="400px" />
-                        <figcaption>Depth = 5.0</figcaption>
+                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
+                        <figcaption>α = 0.25</figcaption>
                     </td>
+
                     <td>
-                        <img src="CBdragon_microfacet_au_screenshot_s512_a64_m12_l16_d525.png" align="middle" width="400px" />
-                        <figcaption>Depth = 5.25</figcaption>
+                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
+                        <figcaption>α = 0.5</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
         <br />
+
+        <h2 align="middle">Part V</h2>
+
+        <p>
+            k
+        </p>
+
+
         <strong>
-            Show a sequence of 4 pictures with visibly different aperture sizes, all focused at the same point in a scene. Make sure to include all screenshots.
+            k
         </strong>
-        <p>
-            The lens radius affects the degree of focus. We notice that for higher lens radius, the area away from the focal distance becomes significantly more
-            unfocused.
-        </p>
-        <p>
-            The following images were generated with 128 samples per pixel, maximum ray depth of 7, 4 light rays, and varying lens radius. The dragon has a roughness
-            alpha = 0.25. The depth is set to 4.75.
-        </p>
+        <!-- Example of including multiple figures -->
         <div align="middle">
             <table style="width:100%">
                 <tr align="center">
                     <td>
-                        <img src="CBdragon_microfacet_au_b03.png" align="middle" width="400px" />
-                        <figcaption>Lens Radius = 0.03</figcaption>
+                        <img src="CBdragon_0.005.png" align="middle" width="250px" />
+                        <figcaption>α = 0.005</figcaption>
                     </td>
+
                     <td>
-                        <img src="CBdragon_microfacet_au_b13.png" align="middle" width="400px" />
-                        <figcaption>Lens Radius = 0.13</figcaption>
+                        <img src="CBdragon_0.05.png" align="middle" width="250px" />
+                        <figcaption>α = 0.05</figcaption>
                     </td>
-                </tr>
-                </br>
-                <tr align="center">
+
                     <td>
-                        <img src="CBdragon_microfacet_au_b23.png" align="middle" width="400px" />
-                        <figcaption>Lens Radius = 0.23</figcaption>
+                        <img src="CBdragon_0.25.png" align="middle" width="250px" />
+                        <figcaption>α = 0.25</figcaption>
                     </td>
+
                     <td>
-                        <img src="CBdragon_microfacet_au_b33.png" align="middle" width="400px" />
-                        <figcaption>Lens Radius = 0.33</figcaption>
+                        <img src="CBdragon_0.5.png" align="middle" width="250px" />
+                        <figcaption>α = 0.5</figcaption>
                     </td>
                 </tr>
             </table>
         </div>
         <br />
         <p>
-            Link to Github: <a> https://github.com/cal-cs184-student/p3-2-pathtracer-sp23-pixelwizards </a>
+            Link to Github: <a> https://github.com/cal-cs184-student/p4-clothsim-sp23-pixelmagiq </a>
         </p>
         <p>
             Link to Github Website: <a> https://github.com/ShrihanSolo/proj-webpage-template </a>
