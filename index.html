@@ -1,27 +1,69 @@
-<html>
-	<head>
-	</head>
-	<body>
-		<h3>CS184/284A Project Webpages</h3>
-		<br><br>
-		<a href="/proj1/index.html">Project 1</a>
-		<br><br>
-		<a href="/proj2/index.html">Project 2</a>
-		<br><br>
-		<a href="/proj3-1/index.html">Project 3-1</a>
-		<br><br>
-		<a href="/proj3-2/index.html">Project 3-2</a>
-		<br><br>
-		<a href="/proj4/index.html">Project 4</a>
-	</body>
-	<script>
-		var links = document.body.getElementsByTagName("a")
-		var a = window.location.href.indexOf(".io")
-		var repo_name = window.location.href.substring(a+3)
-		for(var i = 0; i < links.length; i++){
-			var link = links[i]
-			var actual_name = link.href.substring(link.href.indexOf(".io")+4)
-			link.href = repo_name + actual_name
-		}
-	</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS184/284A Project Webpages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/previews/022/774/538/non_2x/high-tech-futuristic-computer-graphics-background-illustration-ai-generative-free-photo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h3 {
+            margin-bottom: 20px;
+        }
+        a {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            text-decoration: none;
+            color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CS184/284A Project Webpages</h2>
+		<h3>Shrihan Agarwal & Suhrid Saha</h3>
+        <a href="/proj1/index.html">Project 1</a>
+        <a href="/proj2/index.html">Project 2</a>
+        <a href="/proj3-1/index.html">Project 3-1</a>
+        <a href="/proj3-2/index.html">Project 3-2</a>
+        <a href="/proj4/index.html">Project 4</a>
+    </div>
+    <script>
+        var links = document.body.getElementsByTagName("a");
+        var a = window.location.href.indexOf(".io");
+        var repo_name = window.location.href.substring(a+3);
+        for(var i = 0; i < links.length; i++){
+            var link = links[i];
+            var actual_name = link.href.substring(link.href.indexOf(".io")+4);
+            link.href = repo_name + actual_name;
+        }
+    </script>
+</body>
 </html>
